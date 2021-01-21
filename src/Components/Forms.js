@@ -1,33 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import * as yup from "yup";
 import { Col, Button, Form, FormGroup, Label, Input } from "reactstrap";
 
+const schema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  email: yup.string().required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(
+      10,
+      "Password must be 8-16 characters and include both numbers and letters"
+    ),
+  agree: yup.boolean().oneOf([true], "Terms of service must be checked"),
+});
+
 export default function Forms() {
-  const defaultState = {
+  const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     agree: false,
+  });
+  const [disabled, setDisabled] = useState(true);
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+    agree: "",
+  });
+
+  const setFormErrors = (name, value) => {
+    yup
+      .reach(schema, name)
+      .validate(value)
+      .then(() => setErrors({ ...errors, [name]: "" }))
+      .catch((err) => setErrors({ ...errors, [name]: err.errors[0] }));
   };
-  const [form, setForm] = useState(defaultState);
 
   const handleChange = (event) => {
     const { checked, value, name, type } = event.target;
     const valueToUse = type === "checkbox" ? checked : value;
+    setFormErrors(name, valueToUse);
     setForm({ ...form, [name]: valueToUse });
   };
 
+  useEffect(() => {
+    schema.isValid(form).then((valid) => setDisabled(!valid));
+  }, [form]);
+
   return (
     <Form className="forms">
+      <div style={{ color: "red" }}>
+        <p>{errors.name}</p>
+        <p>{errors.email}</p>
+        <p>{errors.password}</p>
+        <p>{errors.agree}</p>
+      </div>
       <FormGroup row>
         <Label for="exampleName" sm={2}>
           Name
         </Label>
         <Col sm={10}>
           <Input
+            value={form.name}
             type="text"
             name="name"
             id="exampleName"
-            onChage={handleChange}
+            onChange={handleChange}
           />
         </Col>
       </FormGroup>
@@ -37,10 +77,11 @@ export default function Forms() {
         </Label>
         <Col sm={10}>
           <Input
+            value={form.email}
             type="email"
             name="email"
             id="exampleEmail"
-            onChage={handleChange}
+            onChange={handleChange}
           />
         </Col>
       </FormGroup>
@@ -50,26 +91,34 @@ export default function Forms() {
         </Label>
         <Col sm={10}>
           <Input
+            value={form.password}
             type="text"
-            name="text"
+            name="password"
             id="examplePassword"
-            onChage={handleChange}
+            onChange={handleChange}
           />
         </Col>
       </FormGroup>
       <FormGroup row>
-        <Label for="checkbox2" sm={2}></Label>
+        <Label for="checkbox1" sm={2}></Label>
         <Col sm={{ size: 10 }}>
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" id="checkbox2" /> Terms of Service
+              <Input
+                onChange={handleChange}
+                checked={form.agree}
+                type="checkbox"
+                name="agree"
+                id="checkbox1"
+              />{" "}
+              I agree to the terms of service
             </Label>
           </FormGroup>
         </Col>
       </FormGroup>
       <FormGroup check row>
         <Col sm={{ size: 10, offset: 2 }}>
-          <Button>Submit</Button>
+          <Button disabled={disabled}>Submit</Button>
         </Col>
       </FormGroup>
     </Form>

@@ -16,7 +16,7 @@ const schema = yup.object().shape({
   agree: yup.boolean().oneOf([true], "Terms of service must be checked"),
 });
 
-export default function Forms() {
+export default function Forms(props) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -58,7 +58,7 @@ export default function Forms() {
     axios
       .post("https://reqres.in/api/users", newUser)
       .then((res) => {
-        console.log("success");
+        props.setUsers(res.data.name);
       })
       .catch((err) => {
         console.log(err);

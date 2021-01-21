@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import * as yup from "yup";
 import { Col, Button, Form, FormGroup, Label, Input } from "reactstrap";
+import * as yup from "yup";
+import axios from "axios";
 
 const schema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -45,12 +46,31 @@ export default function Forms() {
     setForm({ ...form, [name]: valueToUse });
   };
 
+  const submit = (event) => {
+    event.preventDefault();
+    const newUser = {
+      name: form.name.trim(),
+      email: form.email,
+      password: form.password,
+      agree: form.agree,
+    };
+
+    axios
+      .post("https://reqres.in/api/users", newUser)
+      .then((res) => {
+        console.log("success");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     schema.isValid(form).then((valid) => setDisabled(!valid));
   }, [form]);
 
   return (
-    <Form className="forms">
+    <Form className="forms" onSubmit={submit}>
       <div style={{ color: "red" }}>
         <p>{errors.name}</p>
         <p>{errors.email}</p>

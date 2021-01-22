@@ -14,7 +14,7 @@ const schema = yup.object().shape({
     .required("Password is required")
     .min(
       10,
-      "Password must be 8-16 characters and include both numbers and letters"
+      "Password must be at least 10 characters and include both numbers and letters"
     ),
   agree: yup.boolean().oneOf([true], "Terms of service must be checked"),
 });
@@ -89,7 +89,7 @@ export default function Forms(props) {
             value={form.name}
             type="text"
             name="name"
-            id="exampleName"
+            id="nameInput"
             onChange={handleChange}
           />
         </Col>
@@ -103,7 +103,7 @@ export default function Forms(props) {
             value={form.email}
             type="email"
             name="email"
-            id="exampleEmail"
+            id="emailInput"
             onChange={handleChange}
           />
         </Col>
@@ -117,7 +117,7 @@ export default function Forms(props) {
             value={form.password}
             type="text"
             name="password"
-            id="examplePassword"
+            id="passwordInput"
             onChange={handleChange}
           />
         </Col>
@@ -141,7 +141,9 @@ export default function Forms(props) {
       </FormGroup>
       <FormGroup check row>
         <Col sm={{ size: 10, offset: 2 }}>
-          <Button disabled={disabled}>Submit</Button>
+          <Button disabled={disabled} type="submit">
+            Submit
+          </Button>
         </Col>
       </FormGroup>
     </Form>

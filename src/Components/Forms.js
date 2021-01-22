@@ -74,7 +74,7 @@ export default function Forms(props) {
 
   return (
     <Form className="forms" onSubmit={submit}>
-      <div style={{ color: "red" }}>
+      <div className="error-message">
         <p>{errors.name}</p>
         <p>{errors.email}</p>
         <p>{errors.password}</p>
